@@ -3,6 +3,8 @@ import click
 import logging
 from pathlib import Path
 from dotenv import find_dotenv, load_dotenv
+from numpy import full
+
 import pandas as pd
 import src.helping_functions as hf
 
@@ -23,9 +25,26 @@ def main(input_filepath, output_filepath):
     logger.info('df1.csv loaded')
 
     to_drop = ["EmployeeCount"]
-    to_int = ["Age", "DailyRate", "DistanceFromHome", "HourlyRate", "MonthlyIncome", "MonthlyRate", "NumCompaniesWorked"] 
-    to_category = ["BusinessTravel", "Department", "EducationField", "Gender", "JobRole", "MaritalStatus", 
-    "Education", "EnvironmentSatisfaction", "JobInvolvement", "JobLevel", "JobSatisfaction"]
+    to_int = [  "Age", 
+                "DailyRate", 
+                "DistanceFromHome", 
+                "HourlyRate", 
+                "MonthlyIncome", 
+                "MonthlyRate", 
+                "NumCompaniesWorked"
+                ] 
+    to_category = [ "BusinessTravel", 
+                    "Department", 
+                    "EducationField", 
+                    "Gender", 
+                    "JobRole", 
+                    "MaritalStatus", 
+                    "Education", 
+                    "EnvironmentSatisfaction", 
+                    "JobInvolvement", 
+                    "JobLevel", 
+                    "JobSatisfaction"
+                    ]
 
     hf.clean_dataframe(df1, to_drop, to_int, to_category)
     logger.info('df1.csv cleaned')
@@ -35,9 +54,23 @@ def main(input_filepath, output_filepath):
     logger.info('df2.csv loaded')
 
     to_drop = ["Over18"]
-    to_int = ["PercentSalaryHike", "StandardHours", "TotalWorkingYears", "TrainingTimesLastYear", "YearsAtCompany", 
-        "YearsInCurrentRole", "YearsSinceLastPromotion", "YearsWithCurrManager", "YearlyIncome"] 
-    to_category = ["OverTime", "Attrition", "PerformanceRating", "RelationshipSatisfaction", "StockOptionLevel", "WorkLifeBalance"]
+    to_int = [  "PercentSalaryHike", 
+                "StandardHours", 
+                "TotalWorkingYears", 
+                "TrainingTimesLastYear", 
+                "YearsAtCompany", 
+                "YearsInCurrentRole", 
+                "YearsSinceLastPromotion", 
+                "YearsWithCurrManager", 
+                "YearlyIncome"
+                ] 
+    to_category = [ "OverTime", 
+                    "Attrition", 
+                    "PerformanceRating", 
+                    "RelationshipSatisfaction", 
+                    "StockOptionLevel", 
+                    "WorkLifeBalance"
+                    ]
 
     hf.clean_dataframe(df2, to_drop, to_int, to_category)
     logger.info('df2.csv cleaned')
@@ -45,8 +78,13 @@ def main(input_filepath, output_filepath):
     # this will be the target for the model
     df2["Attrition"] = df2["Attrition"].replace(["No", "Yes"], [0, 1])
 
-    # save cleaned dataframe
     full_df = pd.concat([df1, df2], axis=1)
+
+    # trim outliers values
+    trimmer = hf.TrimOutliers()
+    trimmer.transform(full_df)
+
+    # save dataframe
     full_df.to_csv(output_filepath + "/full_df.csv")
     logger.info('full_df.csv saved in /data/processed')
     full_df.to_pickle(output_filepath + "/full_df")

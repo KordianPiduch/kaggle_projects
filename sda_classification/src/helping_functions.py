@@ -1,8 +1,11 @@
 import pandas as pd
 from sklearn.base import BaseEstimator, TransformerMixin
+from sklearn.metrics import classification_report
+from sklearn.metrics import ConfusionMatrixDisplay
 
 # custom transformer
 class TrimOutliers(BaseEstimator, TransformerMixin):
+    # TO DO: columns names to columns index
     columns_to_transform = ["Age", "DistanceFromHome", "TotalWorkingYears", "YearsAtCompany", 
         "YearsInCurrentRole", "YearsSinceLastPromotion", "YearsWithCurrManager"]
 
@@ -28,3 +31,17 @@ def clean_dataframe(dataframe: pd.DataFrame, drop: list, to_int: list, to_catego
     change_type(dataframe, to_category, "category")
 
 
+def print_classification_report(y_train, y_train_pred, y_test, y_test_pred):
+    print("train classification report")
+    print(classification_report(y_train, y_train_pred))
+    print()
+    print("test classification report")
+    print(classification_report(y_test, y_test_pred))
+
+
+def plot_conf_matrix(y_train, y_train_pred, y_test, y_test_pred):
+    print("train classification report")
+    ConfusionMatrixDisplay.from_predictions(y_train, y_train_pred, normalize="true")    
+    print()
+    print("test classification report")
+    ConfusionMatrixDisplay.from_predictions(y_test, y_test_pred, normalize="true")
