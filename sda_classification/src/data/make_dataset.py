@@ -3,6 +3,8 @@ import click
 import logging
 from pathlib import Path
 from dotenv import find_dotenv, load_dotenv
+import pandas as pd
+import src.helping_functions as hf
 
 
 @click.command()
@@ -14,6 +16,40 @@ def main(input_filepath, output_filepath):
     """
     logger = logging.getLogger(__name__)
     logger.info('making final data set from raw data')
+
+
+    # load and prepare dataset part1
+    df1 = pd.read_csv(input_filepath + "/df1.csv", index_col=0)
+    logger.info('df1.csv loaded')
+
+    to_drop = ["EmployeeCount"]
+    to_int = ["Age", "DailyRate", "DistanceFromHome", "HourlyRate", "MonthlyIncome", "MonthlyRate", "NumCompaniesWorked"] 
+    to_category = ["BusinessTravel", "Department", "EducationField", "Gender", "JobRole", "MaritalStatus", 
+    "Education", "EnvironmentSatisfaction", "JobInvolvement", "JobLevel", "JobSatisfaction"]
+
+    hf.clean_dataframe(df1, to_drop, to_int, to_category)
+    logger.info('df1.csv cleaned')
+
+    # load and prepare dataset part1
+    df2 = pd.read_csv(input_filepath + "/df2.csv", index_col=0)
+    logger.info('df2.csv loaded')
+
+    to_drop = ["Over18"]
+    to_int = ["PercentSalaryHike", "StandardHours", "TotalWorkingYears", "TrainingTimesLastYear", "YearsAtCompany", 
+        "YearsInCurrentRole", "YearsSinceLastPromotion", "YearsWithCurrManager", "YearlyIncome"] 
+    to_category = ["OverTime", "Attrition", "PerformanceRating", "RelationshipSatisfaction", "StockOptionLevel", "WorkLifeBalance"]
+
+    hf.clean_dataframe(df2, to_drop, to_int, to_category)
+    logger.info('df2.csv cleaned')
+
+    # this will be the target for the model
+    df2["Attrition"] = df2["Attrition"].replace(["No", "Yes"], [0, 1])
+
+    # save cleaned dataframe
+    full_df = pd.concat([df1, df2], axis=1)
+    full_df.to_csv(output_filepath + "full_df.csv")
+    logger.info('full_df.csv saved in /data/processed')
+
 
 
 if __name__ == '__main__':
