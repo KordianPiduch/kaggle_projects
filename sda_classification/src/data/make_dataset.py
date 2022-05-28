@@ -47,8 +47,10 @@ def main(input_filepath, output_filepath):
 
     # save cleaned dataframe
     full_df = pd.concat([df1, df2], axis=1)
-    full_df.to_csv(output_filepath + "full_df.csv")
+    full_df.to_csv(output_filepath + "/full_df.csv")
     logger.info('full_df.csv saved in /data/processed')
+    full_df.to_pickle(output_filepath + "/full_df")
+    logger.info('pickle full_df saved in /data/processed')
 
 
 
