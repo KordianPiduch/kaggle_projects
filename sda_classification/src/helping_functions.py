@@ -5,7 +5,6 @@ from sklearn.metrics import ConfusionMatrixDisplay
 
 # custom transformer
 class TrimOutliers(BaseEstimator, TransformerMixin):
-    # TO DO: columns names to columns index
     columns_to_transform = ["Age", "DistanceFromHome", "TotalWorkingYears", "YearsAtCompany", 
         "YearsInCurrentRole", "YearsSinceLastPromotion", "YearsWithCurrManager"]
 
@@ -18,8 +17,7 @@ class TrimOutliers(BaseEstimator, TransformerMixin):
     def transform(self, X, y=None):
         for column in self.columns_to_transform:
             X.loc[(X[column] > self.limit), column] = X[column].median()
-
- 
+             
 def change_type(dataframe: pd.DataFrame, col_list: list(), new_type: str):
     for type in col_list:
         dataframe[type] = dataframe[type].astype(new_type)
