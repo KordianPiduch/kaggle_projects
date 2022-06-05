@@ -4,6 +4,20 @@ import logging
 from pathlib import Path
 from dotenv import find_dotenv, load_dotenv
 
+import pandas as pd
+
+
+def get_data(full_path):
+    df = pd.read_csv(full_path)
+
+    # convert categorial columns from int to category dtype.
+    cat_attr = ["sex", "cp", "fbs", "restecg", "exng", "slp", "caa", "thall"]
+
+    for attr in cat_attr:
+        df[attr] = df[attr].astype("category")
+
+    return df
+
 
 @click.command()
 @click.argument('input_filepath', type=click.Path(exists=True))
@@ -14,6 +28,10 @@ def main(input_filepath, output_filepath):
     """
     logger = logging.getLogger(__name__)
     logger.info('making final data set from raw data')
+
+    df = get_data(input_filepath + "heart.csv")
+
+    df.to_pickle(output_filepath + "heart_processed")
 
 
 if __name__ == '__main__':
