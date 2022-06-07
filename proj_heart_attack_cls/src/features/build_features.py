@@ -4,6 +4,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.impute import SimpleImputer
+from sklearn.decomposition import PCA
 
 
 
@@ -27,7 +28,8 @@ def get_train_test(path: str, test_size=0.2):
     num_pipeline = Pipeline(
         [
             ('imputer', SimpleImputer(strategy='median')),
-            ('scaler', StandardScaler())
+            ('scaler', StandardScaler()),
+            # ('pca', PCA())
         ]
     )
 
